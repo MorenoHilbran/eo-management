@@ -41,7 +41,7 @@ export default function SOPsPage() {
     };
 
     const handleDelete = (sop: SOP) => {
-        if (confirm(`Hapus SOP "${sop.title}"?`)) {
+        if (confirm(`Hapus SOP "${sop.name}"?`)) {
             deleteSOP(sop.id);
         }
     };
@@ -57,33 +57,36 @@ export default function SOPsPage() {
     const categories = sops ? [...new Set(sops.map(s => s.category))] : [];
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             {/* Header */}
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">SOP Management</h1>
-                    <p className="text-gray-600 mt-1">Kelola Standard Operating Procedures</p>
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-400">Library</p>
+                        <h1 className="mt-2 text-3xl font-semibold text-slate-900">SOP Management</h1>
+                        <p className="mt-1 text-slate-500">Kelola Standard Operating Procedures dalam tampilan yang lebih ringan.</p>
+                    </div>
+                    {!showForm && (
+                        <button
+                            onClick={() => setShowForm(true)}
+                            className="rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-600"
+                        >
+                            + Tambah SOP
+                        </button>
+                    )}
                 </div>
-                {!showForm && (
-                    <button
-                        onClick={() => setShowForm(true)}
-                        className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                        + Tambah SOP
-                    </button>
-                )}
             </div>
 
             {/* Filter */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-                <label className="text-sm font-medium text-gray-700">Filter Kategori</label>
+            <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                <label className="text-sm font-medium text-slate-700">Filter Kategori</label>
                 <select
                     value={filterCategory}
                     onChange={(e) => {
                         setFilterCategory(e.target.value);
                         setPage(1);
                     }}
-                    className="mt-2 w-full md:w-64 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="mt-2 w-full rounded-2xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-sky-500 md:w-80"
                 >
                     <option value="">Semua Kategori</option>
                     {categories.map((cat) => (
@@ -96,8 +99,8 @@ export default function SOPsPage() {
 
             {/* Form */}
             {showForm && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 className="mb-4 text-lg font-semibold text-slate-900">
                         {editingSOP ? 'Edit SOP' : 'Tambah SOP Baru'}
                     </h2>
                     <SOPForm
@@ -110,7 +113,7 @@ export default function SOPsPage() {
             )}
 
             {/* SOPs Table */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 {error ? (
                     <ErrorMessage onRetry={refetch} />
                 ) : (

@@ -110,12 +110,32 @@ export function RABForm({ item, onSubmit, loading, onCancel }: RABFormProps) {
     );
     const [errors, setErrors] = useState<Record<string, string>>({});
 
+    useEffect(() => {
+        setFormData(
+            item || {
+                event_id: 0,
+                name: '',
+                unit: '',
+                quantity: 1,
+                unit_price: 0,
+                notes: '',
+            }
+        );
+        setErrors({});
+    }, [item]);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
+        const parsedValue = name === 'quantity' || name === 'unit_price' ? Number(value) : value;
         setFormData((prev) => ({
             ...prev,
-            [name]: name === 'quantity' || name === 'unit_price' ? 
-                parseFloat(value) : value,
+            [name]: name === 'quantity' || name === 'unit_price'
+                ? value === ''
+                    ? 0
+                    : Number.isFinite(parsedValue)
+                        ? parsedValue
+                        : prev[name as keyof CreateRABItemRequest]
+                : value,
         }));
         if (errors[name]) {
             setErrors((prev) => {
@@ -172,7 +192,7 @@ export function RABForm({ item, onSubmit, loading, onCancel }: RABFormProps) {
                     <input
                         type="number"
                         name="quantity"
-                        value={formData.quantity}
+                        value={Number.isFinite(formData.quantity) ? formData.quantity : 1}
                         onChange={handleChange}
                         min="1"
                         className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
@@ -202,7 +222,7 @@ export function RABForm({ item, onSubmit, loading, onCancel }: RABFormProps) {
                     <input
                         type="number"
                         name="unit_price"
-                        value={formData.unit_price}
+                        value={Number.isFinite(formData.unit_price) ? formData.unit_price : 0}
                         onChange={handleChange}
                         className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                             errors.unit_price ? 'border-red-500' : 'border-gray-300'

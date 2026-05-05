@@ -14,16 +14,16 @@ class VendorCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Catering', 'description' => 'Food and beverage services'],
-            ['name' => 'Venue', 'description' => 'Event venue and location'],
-            ['name' => 'Sound & Audio', 'description' => 'Sound system and audio equipment'],
-            ['name' => 'Lighting', 'description' => 'Lighting and visual effects'],
-            ['name' => 'Decoration', 'description' => 'Decoration and arrangement'],
-            ['name' => 'Photography', 'description' => 'Photography and videography'],
-            ['name' => 'Transportation', 'description' => 'Transportation services'],
-            ['name' => 'Security', 'description' => 'Security services'],
-            ['name' => 'Entertainment', 'description' => 'Entertainment and performers'],
-            ['name' => 'Printing', 'description' => 'Printing and promotional materials'],
+            ['name' => 'Katering & Minuman', 'description' => 'Layanan katering makanan dan minuman untuk acara'],
+            ['name' => 'Venue & Lokasi', 'description' => 'Penyediaan tempat dan lokasi untuk acara'],
+            ['name' => 'Sound & Audio', 'description' => 'Sistem audio dan peralatan sound berkualitas tinggi'],
+            ['name' => 'Lighting & Proyeksi', 'description' => 'Pencahayaan profesional dan efek visual'],
+            ['name' => 'Dekorasi & Tata Ruang', 'description' => 'Dekorasi tematik dan pengaturan interior ruang'],
+            ['name' => 'Fotografi & Videografi', 'description' => 'Dokumentasi profesional foto dan video acara'],
+            ['name' => 'Transportasi & Logistik', 'description' => 'Layanan transportasi dan pengiriman barang'],
+            ['name' => 'Keamanan & Proteksi', 'description' => 'Tim keamanan profesional dan sistem proteksi'],
+            ['name' => 'Hiburan & Performer', 'description' => 'Artis, DJ, dan performer untuk hiburan acara'],
+            ['name' => 'Percetakan & Merchandise', 'description' => 'Percetakan materi promosi dan merchandise berkualitas'],
         ];
 
         foreach ($categories as $category) {

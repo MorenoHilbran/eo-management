@@ -164,7 +164,11 @@ export interface DashboardStats {
     total_events: number;
     ongoing_events: number;
     completed_events: number;
-    total_budget: string;
+    total_budget: string | number;
+    total_vendors: number;
+    total_sops: number;
+    total_transactions: number;
+    total_spent: string | number;
 }
 
 // Create Request Types

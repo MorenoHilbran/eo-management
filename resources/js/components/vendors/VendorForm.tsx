@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Vendor, CreateVendorRequest, VendorCategory } from '@/types/api';
-import { useCurrency } from '@/hooks';
 
 interface VendorTableProps {
     vendors: Vendor[];
@@ -38,7 +37,6 @@ export function VendorTable({ vendors, loading, onEdit, onDelete }: VendorTableP
                         <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Nama Vendor</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Kategori</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">Kontak</th>
-                        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900">Rating</th>
                         <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900">Status</th>
                         <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900">Aksi</th>
                     </tr>
@@ -51,9 +49,6 @@ export function VendorTable({ vendors, loading, onEdit, onDelete }: VendorTableP
                             <td className="px-4 py-3 text-sm text-gray-600">
                                 <div>{vendor.contact_person}</div>
                                 <div className="text-xs text-gray-500">{vendor.phone}</div>
-                            </td>
-                            <td className="px-4 py-3 text-center text-sm">
-                                <span className="text-yellow-500">★ {vendor.rating || 0}</span>
                             </td>
                             <td className="px-4 py-3 text-center text-sm">
                                 <span className={`px-2 py-1 rounded text-xs font-medium ${
@@ -92,7 +87,7 @@ export function VendorTable({ vendors, loading, onEdit, onDelete }: VendorTableP
 
 interface VendorFormProps {
     vendor?: Vendor;
-    categories: VendorCategory[];
+    categories: VendorCategory[] | { data?: VendorCategory[] } | null | undefined;
     onSubmit: (data: CreateVendorRequest) => Promise<void>;
     loading?: boolean;
     onCancel?: () => void;
@@ -105,10 +100,14 @@ export function VendorForm({
     loading, 
     onCancel 
 }: VendorFormProps) {
+    const normalizedCategories = Array.isArray(categories)
+        ? categories
+        : categories?.data || [];
+
     const [formData, setFormData] = useState<CreateVendorRequest>(
         vendor || {
             name: '',
-            category_id: categories[0]?.id || 0,
+            category_id: normalizedCategories[0]?.id || 0,
             contact_person: '',
             email: '',
             phone: '',
@@ -117,6 +116,15 @@ export function VendorForm({
         }
     );
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        if (!vendor && !formData.category_id && normalizedCategories.length > 0) {
+            setFormData((prev) => ({
+                ...prev,
+                category_id: normalizedCategories[0].id,
+            }));
+        }
+    }, [formData.category_id, normalizedCategories, vendor]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -187,7 +195,7 @@ export function VendorForm({
                         }`}
                     >
                         <option value="">Pilih Kategori</option>
-                        {categories.map((cat) => (
+                        {normalizedCategories.map((cat) => (
                             <option key={cat.id} value={cat.id}>
                                 {cat.name}
                             </option>

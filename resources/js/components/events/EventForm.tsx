@@ -21,11 +21,32 @@ export function EventForm({ event, onSubmit, loading, onCancel }: EventFormProps
     );
     const [errors, setErrors] = useState<Record<string, string>>({});
 
+    React.useEffect(() => {
+        setFormData(
+            event || {
+                name: '',
+                description: '',
+                event_date: '',
+                location: '',
+                budget: 0,
+                status: 'planning',
+            }
+        );
+        setErrors({});
+    }, [event]);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
+        const parsedValue = Number(value);
         setFormData((prev) => ({
             ...prev,
-            [name]: name === 'budget' ? (value === '' ? '' : parseFloat(value)) : value,
+            [name]: name === 'budget'
+                ? value === ''
+                    ? 0
+                    : Number.isFinite(parsedValue)
+                        ? parsedValue
+                        : prev.budget
+                : value,
         }));
         if (errors[name]) {
             setErrors((prev) => {
@@ -125,7 +146,7 @@ export function EventForm({ event, onSubmit, loading, onCancel }: EventFormProps
                     <input
                         type="number"
                         name="budget"
-                        value={formData.budget}
+                        value={Number.isFinite(formData.budget) ? formData.budget : 0}
                         onChange={handleChange}
                         className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                             errors.budget ? 'border-red-500' : 'border-gray-300'

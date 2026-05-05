@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\SOP;
+use App\Models\Transaction;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -65,12 +68,20 @@ class EventController extends Controller
         $ongoingEvents = Event::where('status', 'ongoing')->count();
         $completedEvents = Event::where('status', 'completed')->count();
         $totalBudget = Event::sum('budget');
+        $totalVendors = Vendor::count();
+        $totalSops = SOP::count();
+        $totalTransactions = Transaction::count();
+        $totalSpent = Transaction::where('status', 'approved')->sum('amount');
 
         return response()->json([
             'total_events' => $totalEvents,
             'ongoing_events' => $ongoingEvents,
             'completed_events' => $completedEvents,
             'total_budget' => $totalBudget,
+            'total_vendors' => $totalVendors,
+            'total_sops' => $totalSops,
+            'total_transactions' => $totalTransactions,
+            'total_spent' => $totalSpent,
         ]);
     }
 }

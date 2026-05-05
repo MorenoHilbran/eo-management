@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { usePaginatedQuery, useMutation, useQuery, useCurrency } from '@/hooks';
 import { eventService, rabService } from '@/lib/services';
-import { Event, RABItem, RABTotal, CreateRABItemRequest } from '@/types/api';
+import { Event, RABItem, RABTotal, BudgetStatus, CreateRABItemRequest } from '@/types/api';
 import { RABTable, RABForm } from '@/components/rab/RABForm';
 import { LoadingSkeleton, ErrorMessage, Pagination } from '@/components/common';
 
@@ -18,8 +18,9 @@ export default function EventDetailPage() {
         useQuery<Event>(() => eventService.getEvent(Number(eventId)));
 
     // Fetch RAB items
-    const { data: rabItems, loading: rabLoading, error: rabError, page, setPage, total, refetch: refetchRAB } = 
+    const { data: rabItemsData, loading: rabLoading, error: rabError, page, setPage, total, refetch: refetchRAB } = 
         usePaginatedQuery((page) => eventService.getRabItems(Number(eventId), page));
+    const rabItems = Array.isArray(rabItemsData) ? rabItemsData : [];
 
     // Fetch RAB total
     const { data: rabTotal, refetch: refetchRABTotal } = 
@@ -27,7 +28,7 @@ export default function EventDetailPage() {
 
     // Fetch budget status
     const { data: budgetStatus } = 
-        useQuery(() => eventService.getBudgetStatus(Number(eventId)));
+        useQuery<BudgetStatus>(() => eventService.getBudgetStatus(Number(eventId)));
 
     // Save RAB item
     const { mutate: saveRABItem, loading: isSavingRAB } = useMutation(
@@ -155,7 +156,9 @@ export default function EventDetailPage() {
                     <div className="mb-6 pb-6 border-b">
                         <RABForm
                             item={editingItem || undefined}
-                            onSubmit={(data) => saveRABItem({ ...data, event_id: Number(eventId) })}
+                                onSubmit={async (data) => {
+                                    await saveRABItem({ ...data, event_id: Number(eventId) });
+                                }}
                             loading={isSavingRAB}
                             onCancel={handleCancelRAB}
                         />

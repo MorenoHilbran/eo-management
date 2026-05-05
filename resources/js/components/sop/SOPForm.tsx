@@ -11,12 +11,12 @@ interface SOPFormProps {
 export function SOPForm({ sop, onSubmit, loading, onCancel }: SOPFormProps) {
     const [formData, setFormData] = React.useState<CreateSOPRequest>(
         sop ? {
-            title: sop.title,
+            name: sop.name,
             description: sop.description,
             category: sop.category,
             content: sop.content || '',
         } : {
-            title: '',
+            name: '',
             description: '',
             category: '',
             content: '',
@@ -27,7 +27,7 @@ export function SOPForm({ sop, onSubmit, loading, onCancel }: SOPFormProps) {
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
-        if (!formData.title) newErrors.title = 'Judul harus diisi';
+        if (!formData.name) newErrors.name = 'Judul harus diisi';
         if (!formData.description) newErrors.description = 'Deskripsi harus diisi';
         if (!formData.category) newErrors.category = 'Kategori harus diisi';
         if (!formData.content) newErrors.content = 'Konten harus diisi';
@@ -48,21 +48,21 @@ export function SOPForm({ sop, onSubmit, loading, onCancel }: SOPFormProps) {
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
             <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                     Judul
                 </label>
                 <input
                     type="text"
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className={`mt-2 w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.title ? 'border-red-500' : 'border-gray-300'
+                        errors.name ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="Nama SOP"
                     disabled={loading}
                 />
-                {errors.title && <p className="mt-1 text-xs text-red-600">{errors.title}</p>}
+                {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
             </div>
 
             {/* Category */}

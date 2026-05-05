@@ -17,9 +17,10 @@ export default function TransactionsPage() {
         usePaginatedQuery((page) => transactionService.getTransactions(selectedEvent, undefined, page));
 
     // Fetch events for filter
-    const { data: events = [] } = usePaginatedQuery(
+    const { data: eventsData } = usePaginatedQuery(
         (page) => eventService.getEvents(page)
     );
+    const events = Array.isArray(eventsData) ? eventsData : eventsData?.data || [];
 
     // Save transaction
     const { mutate: saveTransaction, loading: isSaving } = useMutation(
@@ -83,39 +84,50 @@ export default function TransactionsPage() {
         setEditingTransaction(null);
     };
 
+    const handleOpenForm = () => {
+        if (!selectedEvent && Array.isArray(events) && events.length > 0) {
+            setSelectedEvent(events[0]?.id);
+        }
+        setShowForm(true);
+    };
+
     const totalPages = Math.ceil(total / 15);
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             {/* Header */}
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Manajemen Transaksi</h1>
-                    <p className="text-gray-600 mt-1">Kelola pengeluaran dan persetujuan budget</p>
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-400">Finance</p>
+                        <h1 className="mt-2 text-3xl font-semibold text-slate-900">Manajemen Transaksi</h1>
+                        <p className="mt-1 text-slate-500">Kelola pengeluaran dan persetujuan budget dengan lebih ringkas.</p>
+                    </div>
+                    {!showForm && (
+                        <button
+                            onClick={handleOpenForm}
+                            disabled={!Array.isArray(events) || events.length === 0}
+                            className="rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-600 disabled:bg-slate-300"
+                        >
+                            + Tambah Transaksi
+                        </button>
+                    )}
                 </div>
-                {!showForm && (
-                    <button
-                        onClick={() => setShowForm(true)}
-                        className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                        + Tambah Transaksi
-                    </button>
-                )}
             </div>
 
             {/* Filters */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-                <label className="text-sm font-medium text-gray-700">Filter Event</label>
+            <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                <label className="text-sm font-medium text-slate-700">Filter Event</label>
                 <select
                     value={selectedEvent || ''}
                     onChange={(e) => {
                         setSelectedEvent(e.target.value ? Number(e.target.value) : undefined);
                         setPage(1);
                     }}
-                    className="mt-2 w-full md:w-64 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="mt-2 w-full rounded-2xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-sky-500 md:w-80"
                 >
                     <option value="">Semua Event</option>
-                    {events?.map((event) => (
+                    {Array.isArray(events) && events.map((event) => (
                         <option key={event.id} value={event.id}>
                             {event.name} ({formatCurrency(event.budget)})
                         </option>
@@ -125,8 +137,8 @@ export default function TransactionsPage() {
 
             {/* Form */}
             {showForm && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 className="mb-4 text-lg font-semibold text-slate-900">
                         {editingTransaction ? 'Edit Transaksi' : 'Tambah Transaksi Baru'}
                     </h2>
                     <TransactionForm
@@ -140,7 +152,7 @@ export default function TransactionsPage() {
             )}
 
             {/* Transactions Table */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 {error ? (
                     <ErrorMessage onRetry={refetch} />
                 ) : (

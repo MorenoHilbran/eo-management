@@ -14,10 +14,14 @@ export default function VendorsPage() {
         usePaginatedQuery((page) => vendorService.getVendors(page));
 
     // Fetch categories
-    const { data: categories = [] } = useQuery<VendorCategory[]>(
+    const { data: categoriesResponse } = useQuery<any>(
         () => vendorService.getCategories(),
         { enabled: showForm || editingVendor !== null }
     );
+
+    const categories = Array.isArray(categoriesResponse)
+        ? categoriesResponse
+        : categoriesResponse?.data || [];
 
     // Save vendor
     const { mutate: saveVendor, loading: isSaving } = useMutation(
@@ -61,32 +65,35 @@ export default function VendorsPage() {
     const totalPages = Math.ceil(total / 15);
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             {/* Header */}
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Vendor Management</h1>
-                    <p className="text-gray-600 mt-1">Kelola database vendor</p>
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-400">Master data</p>
+                        <h1 className="mt-2 text-3xl font-semibold text-slate-900">Vendor Management</h1>
+                        <p className="mt-1 text-slate-500">Kelola database vendor dengan tampilan yang lebih rapi.</p>
+                    </div>
+                    {!showForm && (
+                        <button
+                            onClick={() => setShowForm(true)}
+                            className="rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-600"
+                        >
+                            + Tambah Vendor
+                        </button>
+                    )}
                 </div>
-                {!showForm && (
-                    <button
-                        onClick={() => setShowForm(true)}
-                        className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                        + Tambah Vendor
-                    </button>
-                )}
             </div>
 
             {/* Form */}
             {showForm && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 className="mb-4 text-lg font-semibold text-slate-900">
                         {editingVendor ? 'Edit Vendor' : 'Tambah Vendor Baru'}
                     </h2>
                     <VendorForm
                         vendor={editingVendor || undefined}
-                        categories={categories || []}
+                        categories={categories}
                         onSubmit={saveVendor}
                         loading={isSaving}
                         onCancel={handleCancel}
@@ -95,7 +102,7 @@ export default function VendorsPage() {
             )}
 
             {/* Vendors Table */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 {error ? (
                     <ErrorMessage onRetry={refetch} />
                 ) : (

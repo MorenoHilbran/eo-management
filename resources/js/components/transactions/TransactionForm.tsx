@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Transaction, CreateTransactionRequest } from '@/types/api';
 import { useCurrency, useDateFormat } from '@/hooks';
 
@@ -137,20 +137,54 @@ export function TransactionForm({
     onCancel,
 }: TransactionFormProps) {
     const [formData, setFormData] = useState<CreateTransactionRequest>(
-        transaction || {
-            event_id: eventId || 0,
-            amount: 0,
-            description: '',
-            transaction_date: new Date().toISOString().split('T')[0],
-        }
+        transaction
+            ? {
+                  ...transaction,
+                  event_id: transaction.event_id || eventId || 0,
+                  amount: Number(transaction.amount) || 0,
+                  description: transaction.description || '',
+                  transaction_date: transaction.transaction_date?.split('T')[0] || new Date().toISOString().split('T')[0],
+              }
+            : {
+                  event_id: eventId || 0,
+                  amount: 0,
+                  description: '',
+                  transaction_date: new Date().toISOString().split('T')[0],
+              }
     );
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        setFormData(
+            transaction
+                ? {
+                      ...transaction,
+                      event_id: transaction.event_id || eventId || 0,
+                      amount: Number(transaction.amount) || 0,
+                      description: transaction.description || '',
+                      transaction_date: transaction.transaction_date?.split('T')[0] || new Date().toISOString().split('T')[0],
+                  }
+                : {
+                      event_id: eventId || 0,
+                      amount: 0,
+                      description: '',
+                      transaction_date: new Date().toISOString().split('T')[0],
+                  }
+        );
+        setErrors({});
+    }, [transaction, eventId]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: name === 'amount' ? parseFloat(value) : value,
+            [name]: name === 'amount'
+                ? value === ''
+                    ? 0
+                    : Number.isNaN(Number(value))
+                        ? prev.amount
+                        : Number(value)
+                : value,
         }));
         if (errors[name]) {
             setErrors((prev) => {
@@ -184,7 +218,7 @@ export function TransactionForm({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg border">
+        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
                 <textarea
@@ -206,7 +240,7 @@ export function TransactionForm({
                     <input
                         type="number"
                         name="amount"
-                        value={formData.amount}
+                        value={Number.isFinite(formData.amount) ? formData.amount : 0}
                         onChange={handleChange}
                         className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                             errors.amount ? 'border-red-500' : 'border-gray-300'

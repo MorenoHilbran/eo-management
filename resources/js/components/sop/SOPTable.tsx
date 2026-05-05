@@ -44,7 +44,7 @@ export function SOPTable({ sops, loading, onEdit, onDelete }: SOPTableProps) {
                 <tbody>
                     {sops.map((sop) => (
                         <tr key={sop.id} className="border-b hover:bg-gray-50">
-                            <td className="px-6 py-4 font-medium text-gray-900">{sop.title}</td>
+                            <td className="px-6 py-4 font-medium text-gray-900">{sop.name}</td>
                             <td className="px-6 py-4 text-sm">
                                 <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
                                     {sop.category}
