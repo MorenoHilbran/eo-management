@@ -9,44 +9,44 @@ interface EventFormProps {
 }
 
 export function EventForm({ event, onSubmit, loading, onCancel }: EventFormProps) {
-    const [formData, setFormData] = useState<CreateEventRequest>(
-        event || {
-            name: '',
-            description: '',
-            event_date: '',
-            location: '',
-            budget: 0,
-            status: 'planning',
-        }
-    );
+    const [formData, setFormData] = useState<CreateEventRequest>({
+        name: event?.name || '',
+        description: event?.description || '',
+        event_date: event?.event_date || '',
+        location: event?.location || '',
+        budget: event ? Number(event.budget) : 0,
+        status: event?.status || 'planning',
+        generate_ai: false,
+    });
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     React.useEffect(() => {
-        setFormData(
-            event || {
-                name: '',
-                description: '',
-                event_date: '',
-                location: '',
-                budget: 0,
-                status: 'planning',
-            }
-        );
+        setFormData({
+            name: event?.name || '',
+            description: event?.description || '',
+            event_date: event?.event_date || '',
+            location: event?.location || '',
+            budget: event ? Number(event.budget) : 0,
+            status: event?.status || 'planning',
+            generate_ai: false,
+        });
         setErrors({});
     }, [event]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target as HTMLInputElement;
         const parsedValue = Number(value);
         setFormData((prev) => ({
             ...prev,
-            [name]: name === 'budget'
-                ? value === ''
-                    ? 0
-                    : Number.isFinite(parsedValue)
-                        ? parsedValue
-                        : prev.budget
-                : value,
+            [name]: type === 'checkbox'
+                ? (e.target as HTMLInputElement).checked
+                : name === 'budget'
+                    ? value === ''
+                        ? 0
+                        : Number.isFinite(parsedValue)
+                            ? parsedValue
+                            : prev.budget
+                    : value,
         }));
         if (errors[name]) {
             setErrors((prev) => {
@@ -171,6 +171,27 @@ export function EventForm({ event, onSubmit, loading, onCancel }: EventFormProps
                     </select>
                 </div>
             </div>
+
+            {!event && (
+                <div className="flex items-start gap-3 bg-sky-50/50 p-4 rounded-xl border border-sky-100 mt-4">
+                    <input
+                        type="checkbox"
+                        id="generate_ai"
+                        name="generate_ai"
+                        checked={!!formData.generate_ai}
+                        onChange={handleChange}
+                        className="h-5 w-5 rounded border-gray-300 text-sky-600 focus:ring-sky-500 cursor-pointer mt-0.5"
+                    />
+                    <div>
+                        <label htmlFor="generate_ai" className="font-semibold text-slate-900 text-sm cursor-pointer flex items-center gap-1.5">
+                            ⚡ Generate Otomatis Jadwal & Anggaran dengan AI
+                        </label>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                            Menggunakan AI Gemini untuk menyusun draf RAB & Rundown awal berdasarkan deskripsi acara secara otomatis.
+                        </p>
+                    </div>
+                </div>
+            )}
 
             <div className="flex gap-2 pt-4">
                 <button

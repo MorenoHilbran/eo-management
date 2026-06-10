@@ -179,6 +179,7 @@ export interface CreateEventRequest {
     location: string;
     budget: number;
     status?: 'planning' | 'ongoing' | 'completed' | 'cancelled';
+    generate_ai?: boolean;
 }
 
 export interface CreateRABItemRequest {
@@ -220,4 +221,45 @@ export interface CreateSOPRequest {
     description?: string;
     content: string;
     file_path?: string;
+}
+
+// Event Timeplan Types
+export interface EventTimeplan {
+    id: number;
+    event_id: number;
+    day_offset: string;
+    time_start: string | null;
+    time_end: string | null;
+    activity: string;
+    pic: string;
+    notes: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface CreateTimeplanRequest {
+    day_offset: string;
+    time_start?: string;
+    time_end?: string;
+    activity: string;
+    pic: string;
+    notes?: string;
+}
+
+export interface AIPlanGenerationResponse {
+    budget_items: {
+        name: string;
+        unit: string;
+        quantity: number;
+        unit_price: number;
+        notes?: string;
+    }[];
+    timeplan_items: {
+        day_offset: string;
+        time_start?: string;
+        time_end?: string;
+        activity: string;
+        pic: string;
+        notes?: string;
+    }[];
 }

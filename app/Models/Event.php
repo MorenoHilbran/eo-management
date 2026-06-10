@@ -55,5 +55,10 @@ class Event extends Model
                     ->withPivot('contract_amount', 'status', 'notes')
                     ->withTimestamps();
     }
+
+    public function timeplans(): HasMany
+    {
+        return $this->hasMany(EventTimeplan::class);
+    }
 }
 

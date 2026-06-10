@@ -7,6 +7,9 @@ import {
     RABItem,
     RABTotal,
     BudgetStatus,
+    EventTimeplan,
+    CreateTimeplanRequest,
+    AIPlanGenerationResponse,
 } from '@/types/api';
 
 export const eventService = {
@@ -45,4 +48,25 @@ export const eventService = {
     // Get budget status
     getBudgetStatus: (eventId: number) => 
         apiClient.get<BudgetStatus>(`/events/${eventId}/budget-status`),
+
+    // AI Generation
+    generateAIPlan: (eventId: number, prompt?: string) =>
+        apiClient.post<AIPlanGenerationResponse>(`/events/${eventId}/generate-ai-plan`, { prompt }),
+
+    // Apply AI Plan
+    applyAIPlan: (eventId: number, data: { mode: 'append' | 'overwrite', budget_items: any[], timeplan_items: any[] }) =>
+        apiClient.post(`/events/${eventId}/apply-ai-plan`, data),
+
+    // Timeplan Management
+    getTimeplans: (eventId: number) =>
+        apiClient.get<EventTimeplan[]>(`/events/${eventId}/timeplans`),
+
+    storeTimeplan: (eventId: number, data: CreateTimeplanRequest) =>
+        apiClient.post<EventTimeplan>(`/events/${eventId}/timeplans`, data),
+
+    updateTimeplan: (id: number, data: Partial<CreateTimeplanRequest>) =>
+        apiClient.put<EventTimeplan>(`/timeplans/${id}`, data),
+
+    destroyTimeplan: (id: number) =>
+        apiClient.delete(`/timeplans/${id}`),
 };

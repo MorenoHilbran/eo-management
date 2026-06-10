@@ -10,11 +10,20 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\SOPController;
 use App\Http\Controllers\Api\VendorCategoryController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AIGeneratorController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // AI Generator & Timeplans
+    Route::post('events/{event}/generate-ai-plan', [AIGeneratorController::class, 'generatePlan']);
+    Route::post('events/{event}/apply-ai-plan', [AIGeneratorController::class, 'applyPlan']);
+    Route::get('events/{event}/timeplans', [AIGeneratorController::class, 'getTimeplans']);
+    Route::post('events/{event}/timeplans', [AIGeneratorController::class, 'storeTimeplan']);
+    Route::put('timeplans/{timeplan}', [AIGeneratorController::class, 'updateTimeplan']);
+    Route::delete('timeplans/{timeplan}', [AIGeneratorController::class, 'destroyTimeplan']);
 
     // Dashboard
     Route::get('/dashboard/stats', [EventController::class, 'dashboard']);
